@@ -7,9 +7,10 @@ services:
     ports:
       - 3307:3306
     environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=eventdb
     volumes:
-      - db:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
 
   # Backend application service
   event:
@@ -22,12 +23,11 @@ services:
     stdin_open: true
     tty: true
     environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/eventdb
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL5InnoDBDialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
-      SPRING_APPLICATION_JSON: '{
-        "spring.datasource.url": "jdbc:mysql://mysqldb:3306/eventdb?createDatabaseIfNotExist=true",
-        "spring.datasource.username": "root",
-        "spring.datasource.password": null,
-        "spring.jpa.properties.hibernate.dialect": "org.hibernate.dialect.MySQL5InnoDBDialect",
-        "spring.jpa.hibernate.ddl-auto": "update"
-      }'
-
+volumes:
+  mysql_data:
